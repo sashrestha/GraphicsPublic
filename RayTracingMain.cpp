@@ -263,9 +263,6 @@ public:
         float w = position.x * period + pow(snoise(position * scale), sharpness)*turbulence;
         w = pow(sin(w)*0.5+0.5, 4);
         vec3 oColor = (vec3(4, 4, 4) * w + vec3(1.5, 1.90, 1.99) * (1-w)) * normal.dot(light->getLightDirAt(position));
-
-//        vec3 oColor = (vec3(1, 1, 1) * w + vec3(0.5, 0.90, 0.99) * (1-w)) * normal.dot(light->getLightDirAt(position));
-
         vec3 h = (light->getLightDirAt(position) + (-ray.dir)).normalize();
         vec3 M = light->getPowerDensityAt(position);
         float spec = pow(max(normal.dot(h), 0.0f), 16.0);
@@ -960,7 +957,7 @@ public:
         coeffs._11 = 1;
         coeffs._22 = 0;
         coeffs._33 = -1;
-        return this->transform(mat4x4::scaling(vec3(1, 1, 1))                                             * mat4x4::translation(moveTo));
+        return this->transform(mat4x4::scaling(vec3(1, 1, 1)) * mat4x4::translation(moveTo));
     }
 
     
@@ -1115,8 +1112,6 @@ public:
         //LightSources
         lightSources.push_back(new DirectionalLight(vec3(0.9, 0.9, 0.9), vec3(1, 1, 0)));
         lightSources.push_back(new DirectionalLight(vec3(0.9, 0.9, 0.9), vec3(0, 0, 1)));
-//        lightSources.push_back(new DirectionalLight(vec3(0.9, 0.9, 0.9), vec3(1, 0, 1)));
-//        lightSources.push_back(new DirectionalLight(vec3(0.9, 0.9, 0.9), vec3(0, 1, 0)));
         lightSources.push_back(new PointLight(vec3(1, 0, 0), vec3(1.04, 0.8, 0.7)));
         
         
@@ -1333,8 +1328,6 @@ public:
         Hit hit = firstIntersect(ray);
         if(hit.t < 0)
             return vec3(0.62, 0.90, 0.99);
-//            return vec3 (0.2, 0.7, 0.94);
-//            return vec3(0.619, 0.8, 1);
         
         float depth = 5;
         vec3 finalColor = vec3(0, 0, 0);
