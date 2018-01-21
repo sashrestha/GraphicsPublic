@@ -719,39 +719,6 @@ public:
     
     
 };
-////////////////////////
-
-
-
-
-
-//class Marble : public Material
-//{
-//    float scale;
-//    float turbulence;
-//    float period;
-//    float sharpness;
-//public:
-//    Marble():
-//    Material(vec3(1, 1, 1))
-//    {
-//        scale = 32;
-//        turbulence = 50;
-//        period = 32;
-//        sharpness = 1;
-//    }
-//    virtual vec3 getColor(
-//                            vec3 position,
-//                            vec3 normal,
-//                            vec3 viewDir)
-//    {
-//        //return normal;
-//        float w = position.x * period + pow(snoise(position * scale), sharpness)*turbulence;
-//        w = pow(sin(w)*0.5+0.5, 4);
-//        return (vec3(0, 0, 1) * w + vec3(1, 1, 1) * (1-w)) * normal.dot(viewDir);
-//    }
-//};
-///////////////////
 
 class Light
 {
@@ -809,9 +776,6 @@ public:
 };
 
 Light light(vec3(1, 1, 1), vec3(1, 1, 1), vec4(0.1, 0.1, 0.1, 0.0));
-
-
-/////////
 
 
 class Camera {
@@ -1053,16 +1017,13 @@ public:
                     0, cos(alphaRot), sin(alphaRot), 0,
                     0, -sin(alphaRot), cos(alphaRot), 0,
                     0, 0, 0, 1);
-        ///
-        
-//        
+  
 		mat4 rotateInv(
 			cos(alpha), 0, -sin(alpha), 0,
 			0, 1, 0, 0,
 			sin(alpha), 0, cos(alpha), 0,
 			0, 0, 0, 1);
         
-        //negative cosine is the same as cosine so no need to change that in inverse
         
         mat4 rotateWheelInv(
                     1, 0, 0, 0,
@@ -1084,41 +1045,28 @@ public:
 		
 		mat4 M = scale * rotate * translate;
         
-        
-//        mat4 MWheel = scale * rotateWheel * translate;
-        
+          
         
         int location = glGetUniformLocation(shader, "M");
         if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, M);
         else printf("uniform M cannot be set\n");
         
-        //ACTUAL MINV
-		mat4 MInv = translateInv * rotateInv * scaleInv;
-        
-//        mat4 MInv = translateInv * rotateWheelInv * scaleInv;
+	mat4 MInv = translateInv * rotateInv * scaleInv;
 
-		location = glGetUniformLocation(shader, "MInv");
-		if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, MInv); 
-		else printf("uniform MInv cannot be set\n");
+	location = glGetUniformLocation(shader, "MInv");
+	if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, MInv); 
+	else printf("uniform MInv cannot be set\n");
 
         
-        //ACTUAL MVP
-		mat4 MVP = M * camera.GetViewMatrix() * camera.GetProjectionMatrix();
-        
-//        mat4 MVP = MWheel * camera.GetViewMatrix() * camera.GetProjectionMatrix();
-        
+	mat4 MVP = M * camera.GetViewMatrix() * camera.GetProjectionMatrix();
 
-		location = glGetUniformLocation(shader, "MVP");
-		if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, MVP); 
-		else printf("uniform MVP cannot be set\n");
+
+
+	location = glGetUniformLocation(shader, "MVP");
+	if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, MVP); 
+	else printf("uniform MVP cannot be set\n");
         
-//        mat4 MVPWheel = MWheel * camera.GetViewMatrix() * camera.GetProjectionMatrix();
-//        
-//        location = glGetUniformLocation(shader, "MVPWheel");
-//        if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, MVPWheel);
-//        else printf("uniform MVPWheel cannot be set\n");
-        
-        
+    
 	}
     
     mat4 GetModelM()
@@ -1218,9 +1166,7 @@ public:
         
         
     }
-    
-        //
-        //
+
     void SetTransform2(unsigned int sp){
         mat4 scale(
                    scaling.x, 0, 0, 0,
@@ -1265,7 +1211,7 @@ public:
         else printf("uniform MVP cannottt be set\n");
         
     }
-    //
+
     
 	virtual void Draw()
 	{
@@ -1340,9 +1286,6 @@ public:
 
 
 
-
-
-
 class Texture
 {
 	unsigned int textureId;
@@ -1402,15 +1345,8 @@ public:
         
         // vertex coordinates: vbo[0] -> Attrib Array 0 -> vertexPosition of the vertex shader
         glBindBuffer(GL_ARRAY_BUFFER, vbo[0]); // make it active, it is an array
-        //  glBindBuffer(GL_ARRAY_BUFFER, offset[0]);
-        //        static float vertexCoords[] = {0, 0, 1, 0, 0, 1, 1, 1};// vertex data on the CPU
-        //order of coords: reflected N --> 0,1,2,3
-//        static float vertexCoords[] =  {-0.5, -1, 0.5, -0.5, -1, -0.5, 0.5, -1, 0.5, 0.5, -1, -0.5};// vertex data on the CPU
-//        static float vertexCoords[] =  {-10, -2, -5, -10, -2, 5, 10, -2, -5, 10, -2, 5};// vertex data on the CPU
         static float vertexCoords[] =  {-10, -0.7, -10, -10, -0.7, 10, 10, -0.7, -5, 10, -0.7, 10};// vertex data on the CPU
-        
-//        static float vertexCoords[] =  {-5, -1, -5, -5, -1, 5, 5, -1, -5, 5, -1, 5};// vertex data on the CPU
-        
+                
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertexCoords), vertexCoords, GL_STATIC_DRAW);
         // map Attribute Array 0 to the current bound vertex buffer (vbo[0])
         glEnableVertexAttribArray(0);
@@ -1435,16 +1371,11 @@ public:
     void DrawModel()
     {
         texture->Bind(shader);
-        
-//        glEnable(GL_BLEND);
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
         glEnable(GL_DEPTH_TEST);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
         glDisable(GL_DEPTH_TEST);
-//        glDisable(GL_BLEND);
-//        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
     }
     
     
@@ -1470,18 +1401,12 @@ public:
         
         // vertex coordinates: vbo[0] -> Attrib Array 0 -> vertexPosition of the vertex shader
         glBindBuffer(GL_ARRAY_BUFFER, vbo); // make it active, it is an array
-        //  glBindBuffer(GL_ARRAY_BUFFER, offset[0]);
-        //        static float vertexCoords[] = {0, 0, 1, 0, 0, 1, 1, 1};// vertex data on the CPU
-        //order of coords: reflected N --> 0,1,2,3
-        //        static float vertexCoords[] =  {-0.5, -1, 0.5, -0.5, -1, -0.5, 0.5, -1, 0.5, 0.5, -1, -0.5};// vertex data on the CPU
-        //        static float vertexCoords[] =  {-10, -2, -5, -10, -2, 5, 10, -2, -5, 10, -2, 5};// vertex data on the CPU
         
         static float vertexCoords[] = {-1.0, -1.0, 0.0, 1.0,
                                         1.0, -1.0, 0.0, 1.0,
                                         -1.0, 1.0, 0.0, 1.0,
                                         1.0, 1.0, 0.0, 1.0};
         
-        //        static float vertexCoords[] =  {-5, -1, -5, -5, -1, 5, 5, -1, -5, 5, -1, 5};// vertex data on the CPU
         
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertexCoords), vertexCoords, GL_STATIC_DRAW);
         // map Attribute Array 0 to the current bound vertex buffer (vbo[0])
@@ -1494,15 +1419,10 @@ public:
     void DrawModel()
     {
         texture->Bind(shader);
-        
-        //        glEnable(GL_BLEND);
-        //        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glEnable(GL_DEPTH_TEST);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
         glDisable(GL_DEPTH_TEST);
-        //        glDisable(GL_BLEND);
-        //        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
     }
     
@@ -1527,13 +1447,7 @@ public:
     
     void DrawShadow() {}
     
-    
-    
-    
 };
-
-
-
 
 
 
@@ -1546,10 +1460,7 @@ public:
 
 	MeshInstance(Texture* t, Mesh* m, Material* mt, unsigned int sp = shaderProgram0) : Object(sp, mt), texture(t), mesh(m)
 	{
-//		scaling = vec3(0.05, 0.05, 0.05);
 		position = vec3(0.0, -0.9, 0.0);
-//		angularVelocity = 20;
-//        mt->SetMaterial(sp);////////////IS THIS RIGHT?
 	}
 
 	virtual void DrawModel()
@@ -1578,7 +1489,6 @@ public:
         angularVelocity = 0;
         velocity = vec3(0, 0, 0);
         
-//        mt->SetMaterial(sp);////////////IS THIS RIGHT?
     }
     
     void DrawModel()
@@ -1591,63 +1501,29 @@ public:
     }
     
     void Control(){
-        
-        //        friction = 1.2;
         acceleration = vec3(0, 0.0, 0);
         angularVelocity = 0.0;
         
         if(keyPressed[';']){
             acceleration += vec3(0.8, 0, 0);
-            //            rtBurner = true;
-            //            angularVelocity += -.10;
         }
         if(keyPressed['k']){
             acceleration += vec3(-0.8, 0, 0);
-            //            lftBurner = true;
-            //            angularVelocity +=  .10;
         }
         if(keyPressed['i']){
-            //            lftBurner = true;
             angularVelocity +=  100;
         }
         if(keyPressed['p']){
-            //            lftBurner = true;
             angularVelocity -=  100;
         }
         
         if(keyPressed['o']){
             acceleration += vec3(0, 0, -0.6);
-            //            btmBurner = true;
         }
         if(keyPressed['l']){
             acceleration += vec3(0.0, 0, 0.6);
         }
-        ////
-        
-        //        velocity = vec3(0,0,0);
-        //        angularVelocity = 0;
-        //
-        //        float alpha = M_PI / 18000.0;
-        //
-        //
-        //        if(keyPressed['i']){
-        //            angularVelocity += 200;
-        //
-        //        }
-        //        if(keyPressed['k']){
-        //            velocity.y += 1000;
-        //        }
-        //        if(keyPressed['l']){
-        //            angularVelocity = 200;
-        //        }
-        //        if(keyPressed['j']){
-        //            angularVelocity = -20;
-        //        }
     }
-    
-    
-    
-
     
 };
 
@@ -1669,8 +1545,6 @@ public:
         position = vec3(2, -0.6, -4);
         angularVelocity = 0;
         velocity = vec3(0, 0, 0);
-        
-//        mt->SetMaterial(sp);////////////IS THIS RIGHT?
     }
     
     void DrawModel()
@@ -1682,56 +1556,6 @@ public:
         glDisable(GL_DEPTH_TEST);
     }
     
-//    void Control(){
-//        
-//        //        friction = 1.2;
-//        acceleration = vec3(0, 0.0, 0);
-//        angularVelocity = 0.0;
-//        
-//        if(keyPressed[';']){
-//            acceleration += vec3(0.6, 0, 0);
-//            //            rtBurner = true;
-//            //            angularVelocity += -.10;
-//        }
-//        if(keyPressed['k']){
-//            acceleration += vec3(-0.6, 0, 0);
-//            //            lftBurner = true;
-//            //            angularVelocity +=  .10;
-//        }
-//        if(keyPressed['o']){
-//            acceleration += vec3(0, 0, 0.8);
-//            //            btmBurner = true;
-//        }
-//        if(keyPressed['l']){
-//            acceleration += vec3(0.0, 0, -0.6);
-//        }
-//        ////
-//        
-//        //        velocity = vec3(0,0,0);
-//        //        angularVelocity = 0;
-//        //
-//        //        float alpha = M_PI / 18000.0;
-//        //
-//        //
-//        //        if(keyPressed['i']){
-//        //            angularVelocity += 200;
-//        //
-//        //        }
-//        //        if(keyPressed['k']){
-//        //            velocity.y += 1000;
-//        //        }
-//        //        if(keyPressed['l']){
-//        //            angularVelocity = 200;
-//        //        }
-//        //        if(keyPressed['j']){
-//        //            angularVelocity = -20;
-//        //        }
-//    }
-    
-    
-    
-    
-    
 };
 
 
@@ -1741,8 +1565,6 @@ class Wheel : public MeshInstance
 {
     Texture *texture;
     Mesh * mesh;
-//    vec3  wEye, wLookat, wVup, velocity, position;
-//    float fov, asp, fp, bp, angularVelocity, orientation;
     
 public:
     
@@ -1752,7 +1574,6 @@ public:
         position = vec3(0.0, -0.9, 0.0);
         angularVelocity = 580;
         
-//        mt->SetMaterial(sp);////////////IS THIS RIGHT?
     }
     
     void DrawModel()
@@ -1787,12 +1608,7 @@ public:
                     0, 1, 0, 0,
                     -sin(alpha), 0, cos(alpha), 0,
                     0, 0, 0, 1);
-        
-        
-        ///
-        //wheel rotate mat
-        // M1M, frst apply wheel  matrix then general matrix (apply sequence of modeling trans to parts of car)
-        // I CHANGED THE GENERAL ROTATION TO BE AROUND THE X AXIS INSTEAD OF Y (original version)
+
         
         float alphaRot = orientation / 180 * M_PI;
         
@@ -1801,16 +1617,13 @@ public:
                          0, cos(alphaRot), sin(alphaRot), 0,
                          0, -sin(alphaRot), cos(alphaRot), 0,
                          0, 0, 0, 1);
-        ///
-        
-        //
+     
         mat4 rotateInv(
                        cos(alpha), 0, -sin(alpha), 0,
                        0, 1, 0, 0,
                        sin(alpha), 0, cos(alpha), 0,
                        0, 0, 0, 1);
         
-        //negative cosine is the same as cosine so no need to change that in inverse
         
         mat4 rotateWheelInv(
                             1, 0, 0, 0,
@@ -1840,9 +1653,6 @@ public:
         if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, M);
         else printf("uniform M cannot be set\n");
         
-        //ACTUAL MINV
-        //		mat4 MInv = translateInv * rotateInv * scaleInv;
-        
         mat4 MInv = translateInv * rotateWheelInv * scaleInv;
         
         location = glGetUniformLocation(sp, "MInv");
@@ -1850,22 +1660,12 @@ public:
         else printf("uniform MInv cannot be set\n");
         
         
-        //ACTUAL MVP
-        //		mat4 MVP = M * camera.GetViewMatrix() * camera.GetProjectionMatrix();
-        
         mat4 MVP = MWheel * camera.GetViewMatrix() * camera.GetProjectionMatrix();
         
         
         location = glGetUniformLocation(sp, "MVP");
         if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, MVP);
         else printf("uniform MVP cannot be set\n");
-        
-        //        mat4 MVPWheel = MWheel * camera.GetViewMatrix() * camera.GetProjectionMatrix();
-        //
-        //        location = glGetUniformLocation(shader, "MVPWheel");
-        //        if (location >= 0) glUniformMatrix4fv(location, 1, GL_TRUE, MVPWheel);
-        //        else printf("uniform MVPWheel cannot be set\n");
-        
         
     }
     
@@ -1891,10 +1691,6 @@ public:
                          0, cos(alphaRot), sin(alphaRot), 0,
                          0, -sin(alphaRot), cos(alphaRot), 0,
                          0, 0, 0, 1);
-        ///
-        
-        
-        //negative cosine is the same as cosine so no need to change that in inverse
         
         mat4 rotateWheelInv(
                             1, 0, 0, 0,
@@ -1943,10 +1739,6 @@ public:
                          0, cos(alphaRot), sin(alphaRot), 0,
                          0, -sin(alphaRot), cos(alphaRot), 0,
                          0, 0, 0, 1);
-        ///
-        
-        
-        //negative cosine is the same as cosine so no need to change that in inverse
         
         mat4 rotateWheelInv(
                             1, 0, 0, 0,
@@ -1969,12 +1761,7 @@ public:
         mat4 MInv = translateInv * rotateWheelInv * scaleInv;
         return MInv;
         
-        
-        
     }
-    
-    //////////
-    
     
 };
 
@@ -2004,56 +1791,6 @@ public:
         glDisable(GL_DEPTH_TEST);
     }
     
-    
-    //////////
-//    void Control(){
-//        
-//        //        friction = 1.2;
-//        acceleration = vec3(0, 0.0, 0);
-//        angularVelocity = 0.0;
-//        
-//        if(keyPressed[';']){
-//            acceleration += vec3(0.6, 0, 0);
-//            //            rtBurner = true;
-//            //            angularVelocity += -.10;
-//        }
-//        if(keyPressed['k']){
-//            acceleration += vec3(-0.6, 0, 0);
-//            //            lftBurner = true;
-//            //            angularVelocity +=  .10;
-//        }
-//        if(keyPressed['o']){
-//            acceleration += vec3(0, 0, 0.8);
-//            //            btmBurner = true;
-//        }
-//        if(keyPressed['l']){
-//            acceleration += vec3(0.0, 0, -0.6);
-//        }
-//        ////
-//        
-//        //        velocity = vec3(0,0,0);
-//        //        angularVelocity = 0;
-//        //
-//        //        float alpha = M_PI / 18000.0;
-//        //
-//        //
-//        //        if(keyPressed['i']){
-//        //            angularVelocity += 200;
-//        //
-//        //        }
-//        //        if(keyPressed['k']){
-//        //            velocity.y += 1000;
-//        //        }
-//        //        if(keyPressed['l']){
-//        //            angularVelocity = 200;
-//        //        }
-//        //        if(keyPressed['j']){
-//        //            angularVelocity = -20;
-//        //        }
-//    }
-//    
-//    
-    
 };
 
 class Ground : public TexturedQuad
@@ -2064,11 +1801,7 @@ public:
     {
         scaling = vec3(0.1, 0.1, 0.1);
         position = vec3(-0.5, 0.5, -0.9);
-        
-        //static function. random returns vec2 where x, y are random coordinates
-        //        position = vec3();
-        
-        
+
     }
 
     
@@ -2097,9 +1830,7 @@ public:
 
 	void Initialize()
 	{
-//        environmentMap = new TextureCube("img/posy.jpg", "img/posy.jpg", "img/posy.jpg", "img/negy.jpg", "img/posy.jpg", "img/posy.jpg");
         environmentMap = new TextureCube("img/posx.jpg", "img/negx.jpg", "img/posy.jpg", "img/negy.jpg", "img/posz.jpg", "img/negz.jpg");
-//        environmentMap = new TextureCube("img/env/atmPosx.jpg", "img/env/atmNegx.jpg", "img/env/atmPosy.jpg", "img/env/atmNegy.jpg", "img/env/atmPosz.jpg", "img/env/atmNegz.jpg");
         
         textures.push_back(new Texture("img/chevy.png"));
         textures.push_back(new Texture("img/tree.png"));
@@ -2116,8 +1847,7 @@ public:
         materials.push_back(new Material(vec3(0.1, 0.1, 0.1), vec3(0.9, 0.9, 0.9), vec3(0.0, 0.0, 0.0), 0.0));
         materials.push_back(new Material(vec3(0.1, 0.1, 0.1), vec3(0.6, 0.6, 0.6), vec3(0.3, 0.3, 0.3), 200));
   
-		objects.push_back(car = new Car(textures[0], meshes[0], materials[1]));
-//        for(int i = 0; i <5; i++)
+	objects.push_back(car = new Car(textures[0], meshes[0], materials[1]));
         objects.push_back(tree = new Tree(textures[1], meshes[1], materials[0]));
         objects.push_back(tigger = new Tigger(textures[3], meshes[3], materials[0]));
         objects.push_back(new Ground(materials[1], textures[2]));
@@ -2127,15 +1857,13 @@ public:
         objects.push_back(wheelBR = new Wheel(textures[0], meshes[2], materials[1]));
         objects.push_back(new FullQuad(materials[1], textures[2]));
         
-        
-        
     }
 
 	~Scene()
 	{
-		for(int i = 0; i < textures.size(); i++) delete textures[i];
-		for(int i = 0; i < meshes.size(); i++) delete meshes[i];
-		for(int i = 0; i < objects.size(); i++) delete objects[i];
+	for(int i = 0; i < textures.size(); i++) delete textures[i];
+	for(int i = 0; i < meshes.size(); i++) delete meshes[i];
+	for(int i = 0; i < objects.size(); i++) delete objects[i];
         delete environmentMap;
 	}
 
@@ -2143,12 +1871,6 @@ public:
 	{
         
         for(int i = 0; i < objects.size(); i++) objects[i]->DrawShadow();
-        
-//        vec3 newPos = vec3(carX, 0, carZ);
-        
-//        car->setPosY(-1);
-//        car->setPosZ(-2);
-//        tree->setPosX(2);
         
         int carX = car->getPos().x;
         int carY = car->getPos().y;
@@ -2160,13 +1882,13 @@ public:
         wheelBR->setPos(vec3(carX+0.3, carY-0.8, carZ-0.55));
         
         
-		for(int i = 0; i < objects.size(); i++) objects[i]->Draw();
+	for(int i = 0; i < objects.size(); i++) objects[i]->Draw();
         
 	}
     
-    void DrawShadow(){
-        for(int i = 0; i < objects.size(); i++) objects[i]->DrawShadow();
-    }
+    	void DrawShadow(){
+        	for(int i = 0; i < objects.size(); i++) objects[i]->DrawShadow();
+    	}
 
 	void Move(float dt)
 	{
@@ -2183,10 +1905,7 @@ public:
 };
 
 
-
-
 Scene scene;
-
 
 
 void onInitialization() {
@@ -2264,11 +1983,7 @@ void onInitialization() {
     glLinkProgram(shaderProgram1);
     checkLinking(shaderProgram1);
     ///
-    
-    
-    
-    ////////////MORE SHADREP??
-    ///
+	
     // Create vertex shader from string
     unsigned int vertexShader2 = glCreateShader(GL_VERTEX_SHADER);
     if (!vertexShader2) { printf("Error in vertex shader 2 creation\n"); exit(1); }
@@ -2347,7 +2062,6 @@ void onInitialization() {
 
 	for(int i = 0; i < 256; i++) keyPressed[i] = false;
 }
-
 
 
 void onKeyboard(unsigned char key, int x, int y)
